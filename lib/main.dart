@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project_test/views/form.dart';
+import 'package:project_test/views/list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,10 +16,15 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: false,
       ),
-      home: const MyWidget(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => MyWidget(),
+        'listaDeTarefas': (context) => ListViewTasks(),
+        'formDeTarefas': (context) => FormViewTasks()
+      },
     );
   }
 }
@@ -33,35 +40,53 @@ class _MyWidgetState extends State<MyWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Lista de tarefas "),
-        backgroundColor: Colors.blue,
-      ),
-      body: Column(
-        children: [
-          Card(
-            color: Colors.grey[200],
-            child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Tarefa 1", style: TextStyle(fontSize: 22), ),
-                    Radio(value: "", groupValue: "", onChanged: (value) {})
-                  ]),
-                Text("Descrição"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(onPressed: (){print("Icone de editar pressionado");}, icon: Icon(Icons.edit, color: Colors.blue,)),
-                    IconButton(onPressed: (){print("Icone de remover pressionado");}, icon: Icon(Icons.delete, color: Colors.red,))],
-                )
-              ],
+      appBar: AppBar(title: Text('Lista de tarefas')),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(
+                'Pedro',
+                style: TextStyle(fontSize: 24),
+              ),
+              accountEmail: Text('pkaspchark@gmail.com'),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person),
+              ),
             ),
-          ))
+            ListTile(
+              title: Text(
+                'Lista de Tarefas',
+                style: TextStyle(fontSize: 17),
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, 'listaDeTarefas');
+              },
+              leading: Icon(
+                Icons.list,
+                size: 28,
+              ),
+            ),
+            Divider(
+              thickness: 2,
+            )
+          ],
+        ),
+      ),
+      body: Stack(
+        children: [
+          Padding(
+              padding: EdgeInsets.only(bottom: 20, right: 10),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'formDeTarefas');
+                  },
+                  child: Icon(Icons.add),
+                ),
+              ))
         ],
       ),
     );
