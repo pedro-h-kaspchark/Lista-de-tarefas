@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_test/service/task_service.dart';
 
 class FormViewTasks extends StatefulWidget {
   const FormViewTasks({super.key});
@@ -9,6 +10,9 @@ class FormViewTasks extends StatefulWidget {
 
 class _FormViewTasksState extends State<FormViewTasks> {
   final _formKey = GlobalKey<FormState>();
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+  TaskService TasksService = TaskService();
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +21,24 @@ class _FormViewTasksState extends State<FormViewTasks> {
         title: Text('Criação de tarefas'),
         backgroundColor: Color.fromARGB(255, 71, 84, 231),
       ),
-      body: Column(
-        key: _formKey,
+      body:
+      Form (key: _formKey, 
+          child:
+      Column(
         children: [
+          
           Padding(
               padding: EdgeInsets.all(12),
               child: TextFormField(
+                controller: _titleController,
                 validator: (value) {
-                  if (value == null || value!.isEmpty) {
+                  if (value == null || value.isEmpty) {
                     return 'Campo obrigatório!';
                   }
                   return null;
+                },
+                onChanged: (value) {
+                  print(_titleController.text);
                 },
                 decoration: InputDecoration(
                     label: Text('Titulo da tarefa'),
@@ -37,6 +48,16 @@ class _FormViewTasksState extends State<FormViewTasks> {
           Padding(
               padding: EdgeInsets.all(12),
               child: TextFormField(
+                controller: _descriptionController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Campo obrigatório!';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  print(_titleController.text);
+                },
                 keyboardType: TextInputType.multiline,
                 maxLines: 4,
                 minLines: null,
@@ -46,12 +67,15 @@ class _FormViewTasksState extends State<FormViewTasks> {
                         borderRadius: BorderRadius.all(Radius.circular(15)))),
               )),
           SizedBox(height: 15),
-          ElevatedButton(onPressed: () {
+          ElevatedButton(onPressed: () async {
             if(_formKey.currentState!.validate()){
-            print('Validou os campos!');
+              String titleNewTask = _titleController.text;
+              String descriptionNewTask = _descriptionController.text;
+              await TasksService.saveTask(titleNewTask, descriptionNewTask, false);
           }}, child: Text('Salvar Tarefa'))
         ],
       ),
+    )
     );
   }
 }
