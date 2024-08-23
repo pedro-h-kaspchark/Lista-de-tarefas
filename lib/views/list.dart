@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_test/models/task_model.dart';
 import 'package:project_test/service/task_service.dart';
+import 'package:project_test/views/form.dart';
 
 class ListViewTasks extends StatefulWidget {
   const ListViewTasks({super.key});
@@ -15,6 +16,7 @@ class _ListViewTasksState extends State<ListViewTasks> {
 
   getAllTasks() async{
     tasks = await taskService.getTasks();
+    setState(() {});
   }
 
   @override
@@ -44,15 +46,40 @@ class _ListViewTasksState extends State<ListViewTasks> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Tarefa 1", style: TextStyle(fontSize: 22), ),
-                    Radio(value: "", groupValue: "", onChanged: (value) {})
+                    Text((tasks[index].title.toString()), style: TextStyle(fontSize: 22), ),
+                    Radio(value: true, groupValue: tasks[index].isDone, onChanged: (value) {
+                      if(value != null){
+                        taskService.editTask(index,
+                        tasks[index].title.toString(),
+                        tasks[index].description.toString());
+                      }
+                    })
                   ]),
-                Text("Descrição"),
+                Text(tasks[index].description.toString()),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IconButton(onPressed: (){print("Icone de editar pressionado");}, icon: Icon(Icons.edit, color: Colors.blue,)),
-                    IconButton(onPressed: (){print("Icone de remover pressionado");}, icon: Icon(Icons.delete, color: Colors.red,))
+                    IconButton(
+                                    onPressed: () async {
+                                      Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FormViewTasks(
+                                                          task: tasks[index],
+                                                          index: index
+                                                          )))
+                                          .then((value) => getAllTasks());
+                                    },
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                    )),
+                    IconButton(onPressed: () async {
+                      await taskService.deleteTasks(index);
+                      getAllTasks();
+                      }, 
+                      icon: Icon(Icons.delete, color: Colors.red,))
                     ],
                 
           )])));

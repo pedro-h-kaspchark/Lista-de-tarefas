@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: false,
       ),
-      initialRoute: '/',
+      home: MyWidget(),
       routes: {
-        '/': (context) => MyWidget(),
+       // '/': (context) => MyWidget(),
         'listaDeTarefas': (context) => ListViewTasks(),
         'formDeTarefas': (context) => FormViewTasks()
       },

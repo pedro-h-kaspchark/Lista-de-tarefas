@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:project_test/models/task_model.dart';
 import 'package:project_test/service/task_service.dart';
 
 class FormViewTasks extends StatefulWidget {
-  const FormViewTasks({super.key});
+  final Task? task;
+  final int? index;
+  const FormViewTasks({super.key, this.task, this.index});
 
   @override
   State<FormViewTasks> createState() => _FormViewTasksState();
@@ -13,6 +16,15 @@ class _FormViewTasksState extends State<FormViewTasks> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TaskService TasksService = TaskService();
+
+  @override
+  void initState() {
+    if(widget.task != null){
+      _titleController.text = widget.task!.title!;
+      _descriptionController.text = widget.task!.description!;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +49,6 @@ class _FormViewTasksState extends State<FormViewTasks> {
                   }
                   return null;
                 },
-                onChanged: (value) {
-                  print(_titleController.text);
-                },
                 decoration: InputDecoration(
                     label: Text('Titulo da tarefa'),
                     border: OutlineInputBorder(
@@ -55,9 +64,6 @@ class _FormViewTasksState extends State<FormViewTasks> {
                   }
                   return null;
                 },
-                onChanged: (value) {
-                  print(_titleController.text);
-                },
                 keyboardType: TextInputType.multiline,
                 maxLines: 4,
                 minLines: null,
@@ -71,7 +77,12 @@ class _FormViewTasksState extends State<FormViewTasks> {
             if(_formKey.currentState!.validate()){
               String titleNewTask = _titleController.text;
               String descriptionNewTask = _descriptionController.text;
-              await TasksService.saveTask(titleNewTask, descriptionNewTask, false);
+              if(widget.task != null && widget.index != null){
+                await TasksService.editTask(widget.index!, titleNewTask, descriptionNewTask);
+              }else{
+                 await TasksService.saveTask(titleNewTask, descriptionNewTask, false);
+              }
+
           }}, child: Text('Salvar Tarefa'))
         ],
       ),

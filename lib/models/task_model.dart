@@ -3,7 +3,7 @@ class Task{
   String? description;
   bool? isDone;
 
-  Task({required this.title,  required description, this.isDone});
+  Task({required this.title,  required this.description, this.isDone});
 
   Map tojson(){
     return{'title': title, 'description': description, 'isDone': isDone};
@@ -12,6 +12,6 @@ class Task{
   Task.fromJson(Map<String, dynamic> json){
     title = json['title'];
     description = json['description'];
-    isDone = json['isDone'];
+    isDone = json['isDone'] ?? false;
   }
 }
