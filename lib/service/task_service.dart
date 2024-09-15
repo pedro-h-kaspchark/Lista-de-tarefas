@@ -4,10 +4,10 @@ import '../../models/task_model.dart';
 
 class TaskService{
   //salva as tarefas
-  Future<void> saveTask(String title, String description2, bool isDone) async{
+  Future<void> saveTask(String title, String description2, bool isDone, String priority) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> tasks = prefs.getStringList('tasks') ?? [];
-    Task task = Task(title: title, description: description2);
+    Task task = Task(title: title, description: description2, priority: priority);
     tasks.add(jsonEncode(task.tojson()));
     await prefs.setStringList('tasks', tasks);
   }
@@ -26,12 +26,23 @@ class TaskService{
     await prefs.setStringList('tasks', tasks);
   }
 
-  editTask(int index, String newTitle, String newDescription) async{
+  editTask(int index, String newTitle, String newDescription, String priority) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> tasks = prefs.getStringList('tasks') ?? [];
-    Task updatedTask = Task(description: newDescription, title: newTitle);
+    Task updatedTask = Task(description: newDescription, title: newTitle, priority: priority);
     tasks[index] = jsonEncode(updatedTask.tojson());
     await prefs.setStringList('tasks', tasks);
+  }
+
+  editTaskByCheckBox(int index, bool isDone) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> tasks = prefs.getStringList('tasks') ?? [];
+    Task existingTask = Task.fromJson(jsonDecode(tasks[index]));
+    existingTask.isDone = isDone;
+
+    tasks[index] = jsonEncode(existingTask.tojson());
+    await prefs.setStringList('tasks', tasks);
+    print("Editou o isDone");
   }
 
 }

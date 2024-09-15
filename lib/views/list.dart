@@ -35,8 +35,28 @@ class _ListViewTasksState extends State<ListViewTasks> {
       body: ListView.builder(
         itemCount: tasks.length, 
         itemBuilder: (context, index){
-          return
-          Card(
+          bool localIsDone = tasks[index].isDone ?? false;
+          String priority = tasks[index].priority ?? 'baixa';
+          
+          Color priorityColor;
+          String priorityText;
+
+          switch (priority) {
+            case 'média':
+              priorityColor = Colors.orange;
+              priorityText = 'Prioridade Média';
+              break;
+            case 'alta':
+              priorityColor = Colors.red;
+              priorityText = 'Prioridade Alta';
+              break;
+            case 'baixa':
+            default:
+              priorityColor = Colors.green;
+              priorityText = 'Prioridade Baixa';
+              break;
+          }
+          return Card(
             color: Colors.grey[200],
             child: Padding(
             padding: EdgeInsets.all(10),
@@ -46,13 +66,16 @@ class _ListViewTasksState extends State<ListViewTasks> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text((tasks[index].title.toString()), style: TextStyle(fontSize: 22), ),
-                    Radio(value: true, groupValue: tasks[index].isDone, onChanged: (value) {
+                    Text((tasks[index].title.toString()), style: TextStyle(fontSize: 22,  color: localIsDone? Colors.grey : Colors.blue, decoration: localIsDone? TextDecoration.lineThrough : TextDecoration.none) , ),
+                    Checkbox(value: tasks[index].isDone ?? false, 
+                    onChanged: (value){
                       if(value != null){
-                        taskService.editTask(index,
-                        tasks[index].title.toString(),
-                        tasks[index].description.toString());
+                      taskService.editTaskByCheckBox(index, value);
                       }
+
+                      setState(() {
+                        tasks[index].isDone = value;
+                      });
                     })
                   ]),
                 Text(tasks[index].description.toString()),
@@ -61,6 +84,7 @@ class _ListViewTasksState extends State<ListViewTasks> {
                   children: [
                     IconButton(
                                     onPressed: () async {
+                                      if(localIsDone == false){
                                       Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -70,19 +94,22 @@ class _ListViewTasksState extends State<ListViewTasks> {
                                                           index: index
                                                           )))
                                           .then((value) => getAllTasks());
+                                      }
                                     },
                                     icon: Icon(
-                                      Icons.edit,
+                                      localIsDone? null : Icons.edit,
                                       color: Colors.blue,
                                     )),
                     IconButton(onPressed: () async {
                       await taskService.deleteTasks(index);
                       getAllTasks();
                       }, 
-                      icon: Icon(Icons.delete, color: Colors.red,))
+                      icon: Icon(Icons.delete, color: localIsDone? Colors.grey : Colors.red,)),
                     ],
                 
-          )])));
+          ),
+          Text(priorityText,
+          style: TextStyle(color: localIsDone? Colors.grey : priorityColor, fontWeight: FontWeight.bold),)])));
     }));
   }
 }
